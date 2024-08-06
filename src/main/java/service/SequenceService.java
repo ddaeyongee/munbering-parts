@@ -1,6 +1,8 @@
 package service;
 
 import entity.Sequence;
+import exception.SequenceLimitExceededException;
+import org.springframework.cache.annotation.Cacheable;
 import repository.SequenceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ public class SequenceService {
     }
 
     @Transactional
+    @Cacheable(value = "sequences", key = "#root.method.name")
     public long getNextSequence() {
         LocalDate today = LocalDate.now();
         Sequence sequence = sequenceRepository.findByDateForUpdate(today)
@@ -24,7 +27,7 @@ public class SequenceService {
 
         long nextValue = sequence.getCurrentValue() + 1;
         if (nextValue > 9_999_999_999L) {
-            throw new RuntimeException("최대값도달");
+            throw new SequenceLimitExceededException("최대값 도달");
         }
 
         sequence.setCurrentValue(nextValue);
@@ -41,6 +44,7 @@ public class SequenceService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "sequences", key = "#root.method.name")
     public long getCurrentSequence() {
         LocalDate today = LocalDate.now();
         return sequenceRepository.findByDateForUpdate(today)
