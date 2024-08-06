@@ -39,7 +39,7 @@ public class SequenceService {
     private Sequence createNewSequence(LocalDate date) {
         Sequence newSequence = new Sequence();
         newSequence.setDate(date);
-        newSequence.setCurrentValue(0L);
+        newSequence.setCurrentValue(1L);
         return sequenceRepository.save(newSequence);
     }
 
