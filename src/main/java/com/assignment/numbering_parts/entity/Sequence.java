@@ -1,4 +1,4 @@
-package entity;
+package com.assignment.numbering_parts.entity;
 
 import jakarta.persistence.*;
 

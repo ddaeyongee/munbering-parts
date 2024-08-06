@@ -1,0 +1,8 @@
+server:
+  port: 19090
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs

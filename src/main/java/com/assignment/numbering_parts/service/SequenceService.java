@@ -1,9 +1,9 @@
-package service;
+package com.assignment.numbering_parts.service;
 
-import entity.Sequence;
-import exception.SequenceLimitExceededException;
+import com.assignment.numbering_parts.entity.Sequence;
+import com.assignment.numbering_parts.repository.SequenceRepository;
+import com.assignment.numbering_parts.exception.SequenceLimitExceededException;
 import org.springframework.cache.annotation.Cacheable;
-import repository.SequenceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

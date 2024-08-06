@@ -1,6 +1,6 @@
-package repository;
+package com.assignment.numbering_parts.repository;
 
-import entity.Sequence;
+import com.assignment.numbering_parts.entity.Sequence;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;

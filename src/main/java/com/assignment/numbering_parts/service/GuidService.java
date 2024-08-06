@@ -1,8 +1,8 @@
-package service;
+package com.assignment.numbering_parts.service;
 
+import com.assignment.numbering_parts.util.GuidGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import util.GuidGenerator;
 
 import java.util.UUID;
 
