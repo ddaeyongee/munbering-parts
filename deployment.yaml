@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: numbering-parts
-          image: numbering-parts:latest
+          image: ddaeyongee/numbering-parts:latest
           ports:
             - containerPort: 19090
           resources:
