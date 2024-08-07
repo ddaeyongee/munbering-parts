@@ -3,7 +3,8 @@ package com.assignment.numbering_parts.service;
 import com.assignment.numbering_parts.entity.Sequence;
 import com.assignment.numbering_parts.exception.SequenceLimitExceededException;
 import com.assignment.numbering_parts.repository.SequenceRepository;
-import org.springframework.cache.annotation.Cacheable;
+import com.assignment.numbering_parts.util.RedisLockUtil;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,13 +13,33 @@ import java.time.LocalDate;
 public class SequenceService {
 
     private final SequenceRepository sequenceRepository;
+    private final RedisLockUtil redisLockUtil;
 
-    public SequenceService(SequenceRepository sequenceRepository) {
+    public SequenceService(SequenceRepository sequenceRepository, RedisLockUtil redisLockUtil) {
         this.sequenceRepository = sequenceRepository;
+        this.redisLockUtil = redisLockUtil;
     }
 
-    @Cacheable(value = "sequences", key = "#root.method.name")
-    public synchronized long getNextSequence() {
+    public long getNextSequence() {
+        String lockKey = "sequenceLock:" + LocalDate.now();
+        try {
+            if (redisLockUtil.tryLock(lockKey, 10000)) {
+                return getAndIncrementSequence();
+            } else {
+                throw new RuntimeException("Failed to acquire lock");
+            }
+        } catch (RedisConnectionFailureException e) {
+            return getAndIncrementSequenceWithoutLock();
+        } finally {
+            try {
+                redisLockUtil.unlock(lockKey);
+            } catch (RedisConnectionFailureException e) {
+                System.out.println("Failed to release lock: " + e.getMessage());
+            }
+        }
+    }
+
+    private long getAndIncrementSequence() {
         LocalDate today = LocalDate.now();
         Sequence sequence = sequenceRepository.findByDateForUpdate(today)
                 .orElseGet(() -> createNewSequence(today));
@@ -34,6 +55,10 @@ public class SequenceService {
         return nextValue;
     }
 
+    private long getAndIncrementSequenceWithoutLock() {
+        return getAndIncrementSequence();
+    }
+
     private Sequence createNewSequence(LocalDate date) {
         Sequence newSequence = new Sequence();
         newSequence.setDate(date);
@@ -41,7 +66,6 @@ public class SequenceService {
         return sequenceRepository.save(newSequence);
     }
 
-    @Cacheable(value = "sequences", key = "#root.method.name")
     public long getCurrentSequence() {
         LocalDate today = LocalDate.now();
         return sequenceRepository.findByDateForUpdate(today)

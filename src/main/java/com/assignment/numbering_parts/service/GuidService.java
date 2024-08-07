@@ -2,8 +2,6 @@ package com.assignment.numbering_parts.service;
 
 import com.assignment.numbering_parts.util.GuidGenerator;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -12,8 +10,6 @@ import java.util.UUID;
 
 @Service
 public class GuidService {
-    private static final Logger logger = LoggerFactory.getLogger(GuidService.class);
-
     /*
     * 17자리 타임스탬프 (yyyyMMddHHmmssSSS)
     * 4자리 서버 추적 정보
