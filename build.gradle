@@ -32,6 +32,8 @@ dependencies {
 
 	configurations.all {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'commons-logging', module: 'commons-logging'
+		exclude group: 'org.slf4j', module: 'slf4j-simple'
 	}
 
 	implementation 'ch.qos.logback:logback-classic'

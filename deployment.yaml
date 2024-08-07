@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: numbering-parts
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: numbering-parts
+  template:
+    metadata:
+      labels:
+        app: numbering-parts
+    spec:
+      containers:
+        - name: numbering-parts
+          image: numbering-parts:latest
+          ports:
+            - containerPort: 19090
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
