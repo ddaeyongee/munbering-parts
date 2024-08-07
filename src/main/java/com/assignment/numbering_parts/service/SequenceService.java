@@ -1,11 +1,10 @@
 package com.assignment.numbering_parts.service;
 
 import com.assignment.numbering_parts.entity.Sequence;
-import com.assignment.numbering_parts.repository.SequenceRepository;
 import com.assignment.numbering_parts.exception.SequenceLimitExceededException;
+import com.assignment.numbering_parts.repository.SequenceRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -18,9 +17,8 @@ public class SequenceService {
         this.sequenceRepository = sequenceRepository;
     }
 
-    @Transactional
     @Cacheable(value = "sequences", key = "#root.method.name")
-    public long getNextSequence() {
+    public synchronized long getNextSequence() {
         LocalDate today = LocalDate.now();
         Sequence sequence = sequenceRepository.findByDateForUpdate(today)
                 .orElseGet(() -> createNewSequence(today));
@@ -39,11 +37,10 @@ public class SequenceService {
     private Sequence createNewSequence(LocalDate date) {
         Sequence newSequence = new Sequence();
         newSequence.setDate(date);
-        newSequence.setCurrentValue(1L);
+        newSequence.setCurrentValue(0L);
         return sequenceRepository.save(newSequence);
     }
 
-    @Transactional(readOnly = true)
     @Cacheable(value = "sequences", key = "#root.method.name")
     public long getCurrentSequence() {
         LocalDate today = LocalDate.now();

@@ -1,19 +1,23 @@
 package com.assignment.numbering_parts.repository;
 
 import com.assignment.numbering_parts.entity.Sequence;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.LockModeType;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public interface SequenceRepository extends JpaRepository<Sequence, Long> {
+public class SequenceRepository {
+    private final Map<LocalDate, Sequence> sequences = new HashMap<>();
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT s FROM Sequence s WHERE s.date = :date")
-    Optional<Sequence> findByDateForUpdate(LocalDate date);
+    public Optional<Sequence> findByDateForUpdate(LocalDate date) {
+        return Optional.ofNullable(sequences.get(date));
+    }
+
+    public Sequence save(Sequence sequence) {
+        sequences.put(sequence.getDate(), sequence);
+        return sequence;
+    }
 }
