@@ -1,6 +1,8 @@
 package com.assignment.numbering_parts.service;
 
 import com.assignment.numbering_parts.util.GuidGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +11,11 @@ import java.util.UUID;
 @Service
 public class GuidService {
     private final String serverId;
+    private static final Logger logger = LoggerFactory.getLogger(GuidService.class);
 
-    public GuidService(@Value("${server.id}") String serverId) {
+    public GuidService(@Value("${server.id:DFLT}") String serverId) {
         this.serverId = normalizeServerId(serverId);
+        logger.info("GuidService::server ID: {}", this.serverId);
     }
 
     private String normalizeServerId(String id) {
