@@ -6,6 +6,7 @@ import com.assignment.numbering_parts.service.SequenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,13 +28,15 @@ public class TestController {
     }
 
     @GetMapping("/guid")
-    public CompletableFuture<ResponseEntity<Map<String, Object>>> testGuid() {
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> testGuid(
+            @RequestHeader(value = "X-Server-Trace", required = false) String serverTrace) {
         return CompletableFuture.supplyAsync(() -> {
             String guid = guidService.generateGuid();
             Map<String, Object> result = new HashMap<>();
             result.put("guid", guid);
             result.put("길이", guid.length());
             result.put("유효성", guid.matches("[a-zA-Z0-9-]+"));
+            result.put("서버추적정보", serverTrace != null ? serverTrace : "없음");
             return ResponseEntity.ok(result);
         });
     }
